@@ -1,7 +1,7 @@
 # Controller
 
 For now it just creating repos.
-How to test it:
+## How to test it:
 - build image
   ```sh
   docker build . -t controller
@@ -19,4 +19,9 @@ How to test it:
   ```sh
   docker run --rm controller -t yourpersonaltokenxyz -w test123 -r workspace_data
   ```
+## push to gcr
 
+```sh
+docker tag controller:latest gcr.io/dsstream-airflowk8s/controller:latest
+docker push gcr.io/dsstream-airflowk8s/controller
+```
