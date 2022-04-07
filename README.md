@@ -25,3 +25,16 @@ For now it just creating repos.
 docker tag controller:latest gcr.io/dsstream-airflowk8s/controller:latest
 docker push gcr.io/dsstream-airflowk8s/controller
 ```
+
+## push to azure cr
+
+on azure portal terminal:
+```sh
+az acr login -n airflowkubernetesui.azurecr.io --expose-token
+```
+on local:
+```sh
+docker login airflowkubernetesui.azurecr.io --username 00000000-0000-0000-0000-000000000000 --password __generated_token__
+docker tag controller:latest airflowkubernetesui.azurecr.io/controller:latest
+docker push airflowkubernetesui.azurecr.io/controller
+```
