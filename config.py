@@ -1,9 +1,9 @@
 import logging
 
 template = {
-    'infra': 'dsstream-airflowk8s_infra_dev.git',
-    'app': 'dsstream-airflowk8s_app_dev.git',
-    'workspace_data': 'dsstream-airflowk8s_workspace_data_dev.git'
+    'infra': 'template_infra_dev.git',
+    'app': 'template_app_dev.git',
+    'workspace_data': 'template_workspace_data_dev.git'
 }
 
 log_lvl = logging.DEBUG
