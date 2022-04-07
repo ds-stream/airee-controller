@@ -38,3 +38,10 @@ docker login airflowkubernetesui.azurecr.io --username 00000000-0000-0000-0000-0
 docker tag controller:latest airflowkubernetesui.azurecr.io/controller:latest
 docker push airflowkubernetesui.azurecr.io/controller
 ```
+
+## run o aks:
+e.g.
+```sh
+az aks get-credentials --resource-group airflow_kubernetes_ui --name airflow_kubernetes_ui_test
+kubectl run init-app1 --image=airflowkubernetesui.azurecr.io/controller:latest --restart=Never -i --rm -- -t GH_token -w test13 -r app
+```
