@@ -78,6 +78,15 @@ class Airee_gh_repo:
     
     def remove_deploy_key(self, key_obj):
         return key_obj.delete()
+    
+    def set_secret(self, repo_obj, name, secret):
+        """Method to set secret in repo"""
+        try:
+            r = repo_obj.create_secret(name, secret)
+        except Exception as e:
+            logger.error(f"Can't create secret {secret} in repo {repo_obj.name}")
+            raise e
+        return r
 
     def generate_from_template(self, type, path, org=None, **kwargs):
         """Method to generate files from template stored on github"""
@@ -116,6 +125,10 @@ class Airee_gh_repo:
         # create deploy-key for init push
         logger.info(f"Added Deploy Key")
         priv_k, pub_k, dk = self.set_deploy_key('init_push', repo_gh, False)
+        # Add secret for infra repo
+        if type == 'infra':
+            logger.info(f"Adding secret TF_VAR_github_token")
+            self.set_secret("TF_VAR_github_token", self.token)
         # create tmp path
         path = self.__get_tmp_path(type)
         # change to logging
