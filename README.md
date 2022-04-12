@@ -6,8 +6,8 @@ For now it just creating repos.
   ```sh
   docker build . -t controller
   ```
-- run docker with proper args.  
-  usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {app,workspace_data,infra} [-e {prd,dev,uat}]
+- run docker with proper args. You can create all repositories at once with param '-r all'  
+  usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {app,workspace_data,infra,all} [-e {prd,dev,uat}]
 
   -h, --help            show this help message and exit  
   -t TOKEN, --token TOKEN  
@@ -17,7 +17,7 @@ For now it just creating repos.
 
   example
   ```sh
-  docker run --rm controller -t yourpersonaltokenxyz -w test123 -r workspace_data
+  docker run --rm controller -t yourpersonaltokenxyz -w test123 -r all -e dev
   ```
 ## push to gcr
 
