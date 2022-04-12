@@ -11,4 +11,4 @@ args = vars(parser.parse_args())
 
 
 airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'])
-airee.create_repo_from_template(args['repo'], extra_context={'repo_name': args['repo']}, default_config=True, overwrite_if_exists=True, no_input=True)
+airee.create_repo_from_template(args['repo'], extra_context={'repo_name': args['repo'], 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True)
