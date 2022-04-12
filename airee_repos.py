@@ -126,9 +126,9 @@ class Airee_gh_repo:
         logger.info(f"Added Deploy Key")
         priv_k, pub_k, dk = self.set_deploy_key('init_push', repo_gh, False)
         # Add secret for infra repo
-        if type == 'infra':
+        if type in ('infra', 'app'):
             logger.info(f"Adding secret TF_VAR_github_token")
-            self.set_secret("TF_VAR_github_token", self.token)
+            self.set_secret(repo_gh, "TF_VAR_github_token", self.token)
         # create tmp path
         path = self.__get_tmp_path(type)
         # change to logging
