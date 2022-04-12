@@ -12,7 +12,8 @@ RUN apt-get install -y git
 
 # copy app & install packages
 RUN mkdir /usr/local/airee-controller
-COPY ["airee_repos.py", "config.py", "pair_key.py", "requirements.txt", "entrypoint_init.py", "/usr/local/airee-controller/"]
+COPY ["requirements.txt", "/usr/local/airee-controller/"]
 RUN python3.8 -m pip install -r /usr/local/airee-controller/requirements.txt
+COPY ["airee_repos.py", "config.py", "pair_key.py", "entrypoint_init.py", "/usr/local/airee-controller/"]
 
 ENTRYPOINT [ "python3.8", "/usr/local/airee-controller/entrypoint_init.py"]
