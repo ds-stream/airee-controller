@@ -10,6 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(config.log_lvl)
 logger.addHandler(config.ch)
+logger.propagate = False
 
 class PairKey:
     def __init__(self):

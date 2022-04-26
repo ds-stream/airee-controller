@@ -7,17 +7,17 @@ For now it just creating repos.
   docker build . -t controller
   ```
 - run docker with proper args. You can create all repositories at once with param '-r all'  
-  usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {app,workspace_data,infra,all} [-e {prd,dev,uat}]
+  usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {small, standard, large} [-e {prd,dev,uat}]
 
   -h, --help            show this help message and exit  
   -t TOKEN, --token TOKEN  
   -w WORKSPACE, --workspace WORKSPACE  
-  -r {app,workspace_data,infra}, --repo {app,workspace_data,infra}  
+  -r {small, standard, large}, --tier {small, standard, large}  
   -e {prd,dev,uat}, --env {prd,dev,uat}  
 
   example
   ```sh
-  docker run --rm controller -t yourpersonaltokenxyz -w test123 -r all -e dev
+  docker run --rm controller -t yourpersonaltokenxyz -w test123 -r small -e dev
   ```
 ## push to gcr
 
@@ -43,5 +43,5 @@ docker push airflowkubernetesui.azurecr.io/controller
 e.g.
 ```sh
 az aks get-credentials --resource-group airflow_kubernetes_ui --name airflow_kubernetes_ui_test
-kubectl run init-app1 --image=airflowkubernetesui.azurecr.io/controller:latest --restart=Never -i --rm -- -t GH_token -w test13 -r app
+kubectl run init-app1 --image=airflowkubernetesui.azurecr.io/controller:latest --restart=Never -i --rm -- -t GH_token -w test13 -r small
 ```

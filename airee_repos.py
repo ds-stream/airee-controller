@@ -1,11 +1,9 @@
 """"""
-from email import message
-from email.policy import default
 from github import Github
 from github.GithubException import GithubException
 import pygit2
 from pair_key import PairKey
-import config, secrets
+import config, util
 from cookiecutter.main import cookiecutter
 from os.path import join as path_join 
 import sys
@@ -14,6 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(config.log_lvl)
 logger.addHandler(config.ch)
+logger.propagate = False
 
 class Airee_gh_repo:
 
@@ -33,11 +32,11 @@ class Airee_gh_repo:
         logger.debug(f"Organization set to {self.org}")
         return org_obj
 
-    def __repo_naming(self, type):
+    def repo_naming(self, type):
         """return name in order to naming convention."""
         return f'{self.workspace}_{type}_{self.env}'
 
-    def __create_repo(self, name, private=True, **kwargs):
+    def create_repo(self, name, private=True, **kwargs):
         """Method to create repos."""
         try:
             repo_obj = self.gh_org.create_repo(name, private=private, **kwargs)
@@ -50,11 +49,6 @@ class Airee_gh_repo:
             else:
                 raise e
         return repo_obj
-    
-    def __get_tmp_path(self, type):
-        """Method generate path in /tmp/ with random sufix"""
-        random_dir_sufix = secrets.token_urlsafe(10)
-        return f'/tmp/{type}{random_dir_sufix}'
 
     def create_empty_repo_gh(self, type):
         """Init repo for Airee.
@@ -62,12 +56,12 @@ class Airee_gh_repo:
         type [str] Value from list [infra, app, workspace_data]
         Return: repository pygithub object
         """
-        name = self.__repo_naming(type)
-        return self.__create_repo(name)
+        name = self.repo_naming(type)
+        return self.create_repo(name)
     
     def get_airee_repo(self, type):
         """Get repo object by airee name"""
-        name = self.__repo_naming(type)
+        name = self.repo_naming(type)
         return self.gh_org.get_repo(name)
 
     def set_deploy_key(self, name, repo_obj, read_only=True):
@@ -117,20 +111,19 @@ class Airee_gh_repo:
 
     def create_repo_from_template(self, type, **kwargs):
         # create repo
-        name = self.__repo_naming(type)
+        name = self.repo_naming(type)
         logger.info(f"Create repo '{name}' for workspace {self.workspace}")
-        repo_gh = self.__create_repo(name, auto_init=True)
+        repo_gh = self.create_repo(name, auto_init=True)
         # repo_gh = self.get_airee_repo(type)
         # repo_gh.create_file("README.md", "init commit", """readmeText""")
         # create deploy-key for init push
         logger.info(f"Added Deploy Key")
         priv_k, pub_k, dk = self.set_deploy_key('init_push', repo_gh, False)
         # Add secret for infra repo
-        if type in ('infra', 'app'):
-            logger.info(f"Adding secret TF_VAR_github_token")
-            self.set_secret(repo_gh, "TF_VAR_github_token", self.token)
+        logger.info(f"Adding secret TF_VAR_github_token")
+        self.set_secret(repo_gh, "TF_VAR_github_token", self.token)
         # create tmp path
-        path = self.__get_tmp_path(type)
+        path = util.get_tmp_path(type)
         # change to logging
         logger.debug(f"Path to tmp folder: {path_join(path, type)}")
         logger.debug(f"Url to repo : {repo_gh.git_url}")
