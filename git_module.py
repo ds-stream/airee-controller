@@ -2,6 +2,7 @@
 import pygit2
 import logging
 import config
+from retry import retry
 
 logger = logging.getLogger(__name__)
 logger.setLevel(config.log_lvl)
@@ -29,7 +30,7 @@ class Gitrepo:
             logger.error("SSH url is not valid. Need start with 'ssh://' or 'git@'")
             raise
 
-
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def clone_repo(self, path):
         self.repo = pygit2.clone_repository(self.ssh_url, path, callbacks=self.callbacks)
         self.repo.remotes.set_url("origin", self.ssh_url)
@@ -49,7 +50,7 @@ class Gitrepo:
         logger.debug(f"Commited")
         return commit_obj
 
-    
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def push(self, branch=['refs/heads/main']):
         remote = self.repo.remotes["origin"]
         remote.push(['refs/heads/main'],callbacks=self.callbacks)
@@ -57,7 +58,7 @@ class Gitrepo:
         return 0
 
 
-
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def add_submodule(self, git_repo, path):
         self.repo.add_submodule(git_repo.ssh_url, path, callbacks=git_repo.callbacks)
         logger.debug(f"Submodule added")
