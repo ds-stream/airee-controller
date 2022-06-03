@@ -32,7 +32,6 @@ def add_token_to_sectets(airee_repo, repo_gh):
 def workspace_repo_create(airee_repo, **kwargs):
     path = util.get_tmp_path('workspace_data')
     repo_gh, priv_k, pub_k = create_repo_with_keypair(airee_repo, 'workspace_data')
-    tag = 'v1.0.0'
 
     logger.debug(f"Path to tmp folder: {path_join(path, 'workspace_data')}")
     logger.debug(f"Url to repo : {repo_gh.git_url}")
@@ -41,7 +40,7 @@ def workspace_repo_create(airee_repo, **kwargs):
     workspace_git = Gitrepo(repo_gh.ssh_url, priv_k, pub_k)
 
     workspace_git.clone_repo(path_join(path, 'workspace_data'))
-    airee_repo.generate_from_template('workspace_data', path, tag, **kwargs)
+    airee_repo.generate_from_template('workspace_data', path, **kwargs)
     workspace_git.commit_all("Init commit")
     workspace_git.push()
 
