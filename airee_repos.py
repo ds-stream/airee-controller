@@ -82,7 +82,7 @@ class Airee_gh_repo:
             raise e
         return r
 
-    def generate_from_template(self, type, path, org=None, **kwargs):
+    def generate_from_template(self, type, path, tag, org=None, **kwargs):
         """Method to generate files from template stored on github"""
         org_name = org if org else self.org
         git_url = f'https://{self.token}@github.com/{org_name}/{config.template[type]}'

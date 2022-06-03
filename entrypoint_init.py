@@ -32,6 +32,7 @@ def add_token_to_sectets(airee_repo, repo_gh):
 def workspace_repo_create(airee_repo, **kwargs):
     path = util.get_tmp_path('workspace_data')
     repo_gh, priv_k, pub_k = create_repo_with_keypair(airee_repo, 'workspace_data')
+    tag = 'v1.0.0'
 
     logger.debug(f"Path to tmp folder: {path_join(path, 'workspace_data')}")
     logger.debug(f"Url to repo : {repo_gh.git_url}")
@@ -40,7 +41,7 @@ def workspace_repo_create(airee_repo, **kwargs):
     workspace_git = Gitrepo(repo_gh.ssh_url, priv_k, pub_k)
 
     workspace_git.clone_repo(path_join(path, 'workspace_data'))
-    airee_repo.generate_from_template('workspace_data', path, **kwargs)
+    airee_repo.generate_from_template('workspace_data', path, tag, **kwargs)
     workspace_git.commit_all("Init commit")
     workspace_git.push()
 
@@ -90,14 +91,15 @@ if __name__ == "__main__":
     parser.add_argument('-w', '--workspace', action='store', required=True)
     parser.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=False, default='dev')
     parser.add_argument('-r', '--tier', action='store', choices=['small', 'standard', 'large'], required=True)
+    parser.add_argument('-b', '--branch', action='store', required=False, default='main')
 
     args = vars(parser.parse_args())
     
     try:
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'])
-        workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True)
-        app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True)
-        infra = infra_repo_create(airee, extra_context={'repo_name': 'infra', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'airflow_performance': args['tier']}, default_config=True, overwrite_if_exists=True, no_input=True)
+        workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+        app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+        infra = infra_repo_create(airee, extra_context={'repo_name': 'infra', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'airflow_performance': args['tier']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
     except Exception as e:
         logger.error(str(e))
         # raise e
