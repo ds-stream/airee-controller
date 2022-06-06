@@ -7,13 +7,15 @@ For now it just creating repos.
   docker build . -t controller
   ```
 - run docker with proper args. You can create all repositories at once with param '-r all'  
-  usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {small, standard, large} [-e {prd,dev,uat}]
+  usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {small, standard, large} [-e {prd,dev,uat}] [-b branch or tag name]
 
   -h, --help            show this help message and exit  
   -t TOKEN, --token TOKEN  
-  -w WORKSPACE, --workspace WORKSPACE  
-  -r {small, standard, large}, --tier {small, standard, large}  
-  -e {prd,dev,uat}, --env {prd,dev,uat}  
+  -w WORKSPACE, --workspace WORKSPACE
+  -r {small, standard, large}, --tier {small, standard, large} 
+  -e {prd,dev,uat}, --env {prd,dev,uat}
+  -b branch or tag name of template repos, optional parameter, default = main
+ 
 
   example
   ```sh
