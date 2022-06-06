@@ -11,9 +11,9 @@ For now it just creating repos.
 
   -h, --help            show this help message and exit  
   -t TOKEN, --token TOKEN  
-  -w WORKSPACE, --workspace WORKSPACE
-  -r {small, standard, large}, --tier {small, standard, large} 
-  -e {prd,dev,uat}, --env {prd,dev,uat}
+  -w WORKSPACE, --workspace WORKSPACE  
+  -r {small, standard, large}, --tier {small, standard, large}  
+  -e {prd,dev,uat}, --env {prd,dev,uat}  
   -b branch or tag name of template repos, optional parameter, default = main
  
 
