@@ -41,7 +41,7 @@ def workspace_repo_create(airee_repo, **kwargs):
 
     workspace_git.clone_repo(path_join(path, 'workspace_data'))
     airee_repo.generate_from_template('workspace_data', path, **kwargs)
-    workspace_git.commit_all("Init commit")
+    workspace_git.commit_all("Init commit [skip ci]")
     workspace_git.push()
 
     return workspace_git
