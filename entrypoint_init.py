@@ -91,13 +91,14 @@ if __name__ == "__main__":
     parser.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=False, default='dev')
     parser.add_argument('-r', '--tier', action='store', choices=['small', 'standard', 'large'], required=True)
     parser.add_argument('-b', '--branch', action='store', required=False, default='main')
-
+    parser.add_argument('-k', '--key', action='store', default='main', required=True)
+    parser.add_argument('-c', '--cert', action='store', default='main', required=True)
     args = vars(parser.parse_args())
     
     try:
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'])
         workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
-        app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+        app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'key_name': args['key'], 'cert_name': args['cert']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
         infra = infra_repo_create(airee, extra_context={'repo_name': 'infra', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'airflow_performance': args['tier']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
     except Exception as e:
         logger.error(str(e))
