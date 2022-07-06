@@ -6,8 +6,7 @@ For now it just creating repos.
   ```sh
   docker build . -t controller
   ```
-- run docker with proper args. You can create all repositories at once with param '-r all'  
-  usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {small, standard, large} [-e {prd,dev,uat}] [-b branch or tag name]
+- run docker with proper args.
 
   -h, --help            show this help message and exit  
   -t TOKEN, --token TOKEN | GitHub PAT needed to create repositories and deploy keys  
