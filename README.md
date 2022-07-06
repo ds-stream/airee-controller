@@ -13,7 +13,7 @@ For now it just creating repos.
   -t TOKEN, --token TOKEN | GitHub PAT needed to create repositories and deploy keys  
   -w WORKSPACE, --workspace WORKSPACE | workspace name  
   -e {prd,dev,uat}, --env {prd,dev,uat} | environment name (for future purposes)  
-  -r {small,standard,large}, --tier {small,standard,large} | environment size (maps to VM sizes, etc.  )
+  -r {small,standard,large}, --tier {small,standard,large} | environment size (maps to VM sizes, etc.  )  
   -b BRANCH, --branch BRANCH | template repositories branch to be used, optional parameter, default = main  
   -p PROJECT, --project PROJECT | GCP project  
   -l GHRLABELS, --ghrlabels GHRLABELS | GitHub Actions runner labels  
