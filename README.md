@@ -6,8 +6,12 @@ For now it just creating repos.
   ```sh
   docker build . -t controller
   ```
+<<<<<<< HEAD
 - run docker with proper args  
   usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {small, standard, large} [-e {prd,dev,uat}] [-b branch or tag name] ...
+=======
+- run docker with proper args.
+>>>>>>> 4f1978ebe41285df8cef81c0313883985f6e978e
 
   -h, --help            show this help message and exit  
   -t TOKEN, --token TOKEN | GitHub PAT needed to create repositories and deploy keys  
