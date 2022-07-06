@@ -15,7 +15,7 @@ For now it just creating repos.
   -e {prd,dev,uat}, --env {prd,dev,uat} | environment name (for future purposes)  
   -r {small,standard,large}, --tier {small,standard,large} | environment size (maps to VM sizes, etc.  )
   -b BRANCH, --branch BRANCH | template repositories branch to be used, optional parameter, default = main  
-  -p PROJECT, --project PROJECT | GCP project
+  -p PROJECT, --project PROJECT | GCP project  
   -l GHRLABELS, --ghrlabels GHRLABELS | GitHub Actions runner labels  
   -g GHORG, --ghorg GHORG | GitHub organization  
   -s TFBUCKEND, --tfbuckend TFBUCKEND | Terraform GCS bucket name to store TF state  
