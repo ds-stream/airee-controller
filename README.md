@@ -10,16 +10,21 @@ For now it just creating repos.
   usage: docker run --rm controller -t TOKEN -w WORKSPACE -r {small, standard, large} [-e {prd,dev,uat}] [-b branch or tag name]
 
   -h, --help            show this help message and exit  
-  -t TOKEN, --token TOKEN  
-  -w WORKSPACE, --workspace WORKSPACE  
-  -r {small, standard, large}, --tier {small, standard, large}  
-  -e {prd,dev,uat}, --env {prd,dev,uat}  
-  -b branch or tag name of template repos, optional parameter, default = main
- 
+  -t TOKEN, --token TOKEN | GitHub PAT needed to create repositories and deploy keys  
+  -w WORKSPACE, --workspace WORKSPACE | workspace name  
+  -e {prd,dev,uat}, --env {prd,dev,uat} | environment name (for future purposes)  
+  -r {small,standard,large}, --tier {small,standard,large} | environment size (maps to VM sizes, etc.  )
+  -b BRANCH, --branch BRANCH | template repositories branch to be used, optional parameter, default = main  
+  -p PROJECT, --project PROJECT | GCP project
+  -l GHRLABELS, --ghrlabels GHRLABELS | GitHub Actions runner labels  
+  -g GHORG, --ghorg GHORG | GitHub organization  
+  -s TFBUCKEND, --tfbuckend TFBUCKEND | Terraform GCS bucket name to store TF state  
+  -k KEY, --key KEY | private key needed for SSL/TLS in Airflow Webserver  
+  -c CERT, --cert CERT | certificate needed for SSL/TLS in Airflow Webserver  
 
   example
   ```sh
-  docker run --rm controller -t yourpersonaltokenxyz -w test123 -r small -e dev
+  docker run --rm controller -t yourpersonaltokenxyz -w test123 -r small -e dev -p infra-sandbox-352609 -l gcp,airee -k key -c cert -s test-mm-terra
   ```
 ## push to gcr
 
