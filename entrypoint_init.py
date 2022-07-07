@@ -4,6 +4,7 @@ import config, util
 import argparse
 from os.path import join as path_join 
 import logging
+import re #library for name check
 
 logger = logging.getLogger(__name__)
 logger.setLevel(config.log_lvl)
@@ -100,6 +101,11 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
     
     try:
+        # Name Check
+        if (True if len(args['workspace']) > 5 and len(args['workspace']) < 31 and bool(re.match("^[a-z-]*$", args['workspace'])) == True else False) == False:
+            print("[ERROR] - Workspace name should have between 6 and 30 characters, and can contain lowercase alphanumeric characters and dashes!")
+            raise SystemExit(1)
+
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
         workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
         app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': args['key'], 'cert_name': args['cert']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
