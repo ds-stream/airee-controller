@@ -101,14 +101,16 @@ if __name__ == "__main__":
     parser.add_argument('-z', '--dnszone', action='store', required=False, default=None)
     args = vars(parser.parse_args())
     
-    if (args['cert'] == None):
+    if (args['cert'] == None) & (args['domain'] == None):
         logging.info(f"Cert secret name was not passed. Self signed cert will be generated.")
         app_cert = f"{args['workspace']}_ariee_cert"
         app_key = f"{args['workspace']}_ariee_key"
+    elif (args['cert'] == None) & (args['domain'] != None):
+        logging.error("Domain passed without Cert! Please pass Cert Secret name.")
+        exit(1)
     else:
         app_cert = args['cert']
         app_key = args['key']
-
 
     try:
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
@@ -118,6 +120,4 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.error(str(e))
-        # raise e
 
-    # airee.create_repo_from_template(args['repo'], extra_context={'repo_name': args['repo'], 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org}, default_config=True, overwrite_if_exists=True, no_input=True)
