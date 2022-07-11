@@ -9,17 +9,19 @@ For now it just creating repos.
 - run docker with proper args.
 
   -h, --help            show this help message and exit  
-  -t TOKEN, --token TOKEN | GitHub PAT needed to create repositories and deploy keys  
-  -w WORKSPACE, --workspace WORKSPACE | workspace name  
-  -e {prd,dev,uat}, --env {prd,dev,uat} | environment name (for future purposes)  
-  -r {small,standard,large}, --tier {small,standard,large} | environment size (maps to VM sizes, etc.  )  
+  -t TOKEN, --token TOKEN | GitHub PAT needed to create repositories and deploy keys - <b>Required</b>  
+  -w WORKSPACE, --workspace WORKSPACE | workspace name - <b>Required</b>  
+  -e {prd,dev,uat}, --env {prd,dev,uat} | environment name (for future purposes) - default='dev'  
+  -r {small,standard,large}, --tier {small,standard,large} | environment size (maps to VM sizes, etc.) - <b>Required</b>  
   -b BRANCH, --branch BRANCH | template repositories branch to be used, optional parameter, default = main  
-  -p PROJECT, --project PROJECT | GCP project  
-  -l GHRLABELS, --ghrlabels GHRLABELS | GitHub Actions runner labels  
-  -g GHORG, --ghorg GHORG | GitHub organization  
-  -s TFBUCKEND, --tfbuckend TFBUCKEND | Terraform GCS bucket name to store TF state  
+  -p PROJECT, --project PROJECT | GCP project - <b>Required</b>  
+  -l GHRLABELS, --ghrlabels GHRLABELS | GitHub Actions runner labels - default='airflow'  
+  -g GHORG, --ghorg GHORG | GitHub organization - <b>Required</b>  
+  -s TFBUCKEND, --tfbuckend TFBUCKEND | Terraform GCS bucket name to store TF state - <b>Required</b>  
   -k KEY, --key KEY | private key needed for SSL/TLS in Airflow Webserver  
   -c CERT, --cert CERT | certificate needed for SSL/TLS in Airflow Webserver  
+  -d DOMAIN, --domain DOMAIN | name of domain in GCP Project  
+  -z DNSZONNE, --dnszone DNSZONE | name of dns-zone service in GCP Project  
 
   example
   ```sh
