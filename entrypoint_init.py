@@ -12,6 +12,12 @@ logger.addHandler(config.ch)
 logger.propagate = False
 
 
+def name_check(name,pattern,max_len, min_len):
+    if (True if len(name) >= min_len and len(name) <= max_len and bool(re.match(pattern, name)) == True else False) == False:
+            print("[ERROR] - Workspace name should have between 1 and 19 characters (normal max len is 30, but later wokspace name will be glued to the 'wi-user-sa-' pattern), and can contain lowercase alphanumeric characters and dashes!")
+            raise SystemExit(1)
+
+
 def create_repo_with_keypair(airee_repo, type):
     # create repo
     name = airee_repo.repo_naming(type)
@@ -101,11 +107,7 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
     
     try:
-        # Name Check
-        if (True if len(args['workspace']) > 5 and len(args['workspace']) < 31 and bool(re.match("^[a-z-]*$", args['workspace'])) == True else False) == False:
-            print("[ERROR] - Workspace name should have between 6 and 30 characters, and can contain lowercase alphanumeric characters and dashes!")
-            raise SystemExit(1)
-
+        name_check(args['workspace'], "^[a-z-]*$", 19, 1)
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
         workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
         app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': args['key'], 'cert_name': args['cert']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
