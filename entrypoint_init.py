@@ -94,7 +94,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--project', action='store', required=True, help="GCP project - Required")
     parser.add_argument('-l', '--ghrlabels', action='store', required=False, default='airflow', help="GitHub Actions runner labels - default='airflow'")
     parser.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
-    parser.add_argument('-s', '--tfbuckend', action='store', required=False, help="Terraform GCS bucket name to store TF state - Required")
+    parser.add_argument('-s', '--tfbuckend', action='store', required=True, help="Terraform GCS bucket name to store TF state - Required")
     parser.add_argument('-k', '--key', action='store', required=False, default=None, help="private key needed for SSL/TLS in Airflow Webserver")
     parser.add_argument('-c', '--cert', action='store', required=False, default=None, help="certificate needed for SSL/TLS in Airflow Webserver")
     parser.add_argument('-d', '--domain', action='store', required=False, default=None, help="name of domain in GCP Project")
