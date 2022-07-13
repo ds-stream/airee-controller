@@ -103,8 +103,8 @@ if __name__ == "__main__":
     
     if (args['cert'] == None) & (args['domain'] == None):
         logging.info(f"Cert secret name was not passed. Self signed cert will be generated.")
-        app_cert = f"{args['workspace']}-ariee_cert"
-        app_key = f"{args['workspace']}-ariee_key"
+        app_cert = f"{args['workspace']}-airee_cert"
+        app_key = f"{args['workspace']}-airee_key"
     elif (args['cert'] == None) & (args['domain'] != None):
         logging.error("Domain passed without Cert! Please pass Cert Secret name.")
         exit(1)
