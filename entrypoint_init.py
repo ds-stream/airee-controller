@@ -60,7 +60,7 @@ def app_repo_create(airee_repo, workspace_git, **kwargs):
     app_git.clone_repo(path_join(path, 'app'))
     airee_repo.generate_from_template('app', path, **kwargs)
     app_git.add_submodule(workspace_git, 'dags')
-    app_git.commit_all("Init commit")
+    app_git.commit_all("Init commit [skip ci]")
     app_git.push()
 
     return app_git
