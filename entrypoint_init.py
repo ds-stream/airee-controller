@@ -60,7 +60,7 @@ def app_repo_create(airee_repo, workspace_git, **kwargs):
     app_git.clone_repo(path_join(path, 'app'))
     airee_repo.generate_from_template('app', path, **kwargs)
     app_git.add_submodule(workspace_git, 'dags')
-    app_git.commit_all("Init commit")
+    app_git.commit_all("Init commit [skip ci]")
     app_git.push()
 
     return app_git
@@ -103,8 +103,8 @@ if __name__ == "__main__":
     
     if (args['cert'] == None) & (args['domain'] == None):
         logging.info(f"Cert secret name was not passed. Self signed cert will be generated.")
-        app_cert = f"{args['workspace']}_ariee_cert"
-        app_key = f"{args['workspace']}_ariee_key"
+        app_cert = f"{args['workspace']}-airee_cert"
+        app_key = f"{args['workspace']}-airee_key"
     elif (args['cert'] == None) & (args['domain'] != None):
         logging.error("Domain passed without Cert! Please pass Cert Secret name.")
         exit(1)
