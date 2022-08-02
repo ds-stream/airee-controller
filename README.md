@@ -53,3 +53,7 @@ e.g.
 az aks get-credentials --resource-group airflow_kubernetes_ui --name airflow_kubernetes_ui_test
 kubectl run init-app1 --image=airflowkubernetesui.azurecr.io/controller:latest --restart=Never -i --rm -- -t GH_token -w test13 -r small
 ```
+
+## Pydoc
+
+All modules, functions, class and methods have pydoc using [google python style](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings)
