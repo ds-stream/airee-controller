@@ -1,5 +1,7 @@
-"""Module to comunicate with Ariee repos on GitHub.
+"""Module to comunicate with Ariee Github objects.
 
+Not to be confused with git repositories.
+Using this module/class you can add secrets, deploy key or even remove repository from GitHub.
 It use mainly github and cookiecutter frameworks.
 
     Typical usege:
