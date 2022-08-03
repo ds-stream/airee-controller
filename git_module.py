@@ -31,8 +31,8 @@ class Gitrepo:
         keypair: pygit2 keypair object contain public and private key for auth
         callbacks: pygit2 callback object to handle comunication with remote repository
         ssh_url: string with ssh's type url to repository
-        prv_k: string base64 encoded private key
-        pub_k: string base64 encoded public key
+        prv_k: string byte encoded private key
+        pub_k: string byte encoded public key
         repo: pygit repository object
     """
     def __init__(self, ssh_url, prv_k, pub_k):
