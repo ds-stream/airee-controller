@@ -1,3 +1,5 @@
+"""Module with entrypoint functions and script for docker image.
+"""
 from airee_repos import Airee_gh_repo
 from git_module import Gitrepo
 import config, util
@@ -12,6 +14,15 @@ logger.propagate = False
 
 
 def create_repo_with_keypair(airee_repo, type):
+    """Function to create GH repositorie with deploy key using project naming convntion.
+
+    Args:
+        airee_repo: Airee_gh_repo object
+        type: string with type ["infra", "app", "workspace_data"]
+
+    Returns:
+        Repository object with deploy key pair.
+    """
     # create repo
     name = airee_repo.repo_naming(type)
     logger.info(f"Create repo '{name}' for workspace {airee_repo.workspace}")
@@ -23,6 +34,15 @@ def create_repo_with_keypair(airee_repo, type):
     return repo_gh, priv_k, pub_k
 
 def add_token_to_sectets(airee_repo, repo_gh):
+    """Function to PAT from airee_repo object atribute to repository as a secret.
+
+    Args:
+        airee_repo: Airee_gh_repo object
+        repo_gh: Repository object where PAT will be placed
+    
+    Returns:
+        0 value if exit without error
+    """
     # Add secret for infra repo
     logger.info(f"Adding secret TF_VAR_github_token")
     airee_repo.set_secret(repo_gh, "TF_VAR_github_token", airee_repo.token)
@@ -30,6 +50,15 @@ def add_token_to_sectets(airee_repo, repo_gh):
     return 0
 
 def workspace_repo_create(airee_repo, **kwargs):
+    """Function to create "workspace data" repository.
+
+    Args:
+        airee_repo: Airee_gh_repo object.
+        kwargs: dict with params passed to generate_from_template method in Airee_gh_repo object (cookiecutter params)
+    
+    Returns:
+        git repository object of "workspace data" repository.
+    """
     path = util.get_tmp_path('workspace_data')
     repo_gh, priv_k, pub_k = create_repo_with_keypair(airee_repo, 'workspace_data')
 
@@ -47,6 +76,16 @@ def workspace_repo_create(airee_repo, **kwargs):
     return workspace_git
 
 def app_repo_create(airee_repo, workspace_git, **kwargs):
+    """Function to create "app" repository with "workspace data" repository as a submodule.
+
+    Args:
+        airee_repo: Airee_gh_repo object.
+        workspace_git: workspace git repository object.
+        kwargs: dict with params passed to generate_from_template method in Airee_gh_repo object (cookiecutter params)
+    
+    Returns:
+        git repository object of "app" repository.
+    """
     path = util.get_tmp_path('app')
     repo_gh, priv_k, pub_k = create_repo_with_keypair(airee_repo, 'app')
 
@@ -66,6 +105,15 @@ def app_repo_create(airee_repo, workspace_git, **kwargs):
     return app_git
 
 def infra_repo_create(airee_repo, **kwargs):
+    """Function to create "infra" repository.
+
+    Args:
+        airee_repo: Airee_gh_repo object.
+        kwargs: dict with params passed to generate_from_template method in Airee_gh_repo object (cookiecutter params)
+    
+    Returns:
+        git repository object of "infra" repository.
+    """
     path = util.get_tmp_path('infra')
     repo_gh, priv_k, pub_k = create_repo_with_keypair(airee_repo, 'infra')
 

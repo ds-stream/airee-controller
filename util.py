@@ -1,3 +1,4 @@
+"""Module with utility functions."""
 import config
 import secrets
 import logging

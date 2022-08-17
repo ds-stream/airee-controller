@@ -1,3 +1,11 @@
+"""Module with configuration.
+
+Atributes:
+    template: dict with names of cookiecutter templates git repositories, used in ariee_repos
+    log_lvl: logging level
+    ch: channel of logging
+    formatter: logging formatter used in controller
+"""
 import logging
 
 template = {
