@@ -147,8 +147,10 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--cert', action='store', required=False, default=None, help="certificate needed for SSL/TLS in Airflow Webserver")
     parser.add_argument('-d', '--domain', action='store', required=False, default=None, help="name of domain in GCP Project")
     parser.add_argument('-z', '--dnszone', action='store', required=False, default=None, help="name of dns-zone service in GCP Project")
+    parser.add_argument('-n', '--nfsdags', action='store', required=False, choices=['yes', 'no'], default='yes', help="Flag if DAGs will be keeped on NFS, otherwise DAGs will be in image")
     args = vars(parser.parse_args())
     
+    # check certs
     if (args['cert'] == None) & (args['domain'] == None):
         logging.info(f"Cert secret name was not passed. Self signed cert will be generated.")
         app_cert = f"{args['workspace']}-airee_cert"
@@ -160,11 +162,17 @@ if __name__ == "__main__":
         app_cert = args['cert']
         app_key = args['key']
 
+    #check NFS
+    if args['nfsdags'] == 'no':
+        nfsdags = None
+    else:
+        nfsdags = args['nfsdags']
+
     try:
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
-        workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
-        app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': app_key, 'cert_name': app_cert}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
-        infra = infra_repo_create(airee, extra_context={'repo_name': 'infra', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'airflow_performance': args['tier'], 'labels': args['ghrlabels'], 'project_id': args['project'], 'tf_backend': args['tfbuckend'], 'domain': args['domain'], 'dns_zone': args['dnszone'], 'cert_name': args['cert']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+        workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+        app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': app_key, 'cert_name': app_cert, 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+        infra = infra_repo_create(airee, extra_context={'repo_name': 'infra', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'airflow_performance': args['tier'], 'labels': args['ghrlabels'], 'project_id': args['project'], 'tf_backend': args['tfbuckend'], 'domain': args['domain'], 'dns_zone': args['dnszone'], 'cert_name': args['cert'], 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
 
     except Exception as e:
         logger.error(str(e))
