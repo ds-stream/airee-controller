@@ -12,10 +12,16 @@ logger.addHandler(config.ch)
 logger.propagate = False
 
 
-def name_check(name,pattern,max_len, min_len):
-    if (True if len(name) >= min_len and len(name) <= max_len and bool(re.match(pattern, name)) == True else False) == False:
-            print("[ERROR] - Workspace name should have between 1 and 19 characters (normal max len is 30, but later wokspace name will be glued to the 'wi-user-sa-' pattern), and can contain lowercase alphanumeric characters and dashes!")
-            raise SystemExit(1)
+def name_check(name, pattern, max_len, min_len):
+    """Function to validate workspace name.
+
+    Due to limitation of 30 characters for account name, wokspace name need to be limit as weel.
+    Workspace name Will be glued to the 'wi-user-sa-' pattern.
+    """
+    if not (len(name) >= min_len and len(name) <= max_len and bool(re.match(pattern, name)) == True):
+        logger.error(f"Workspace name should have between {min_len} and {max_len} characters, and can contain characters with regex {pattern}!")
+        raise SystemExit(1)
+    return True
 
 
 def create_repo_with_keypair(airee_repo, type):
