@@ -6,11 +6,24 @@ import config, util
 import argparse
 from os.path import join as path_join 
 import logging
+import re #library for name check
 
 logger = logging.getLogger(__name__)
 logger.setLevel(config.log_lvl)
 logger.addHandler(config.ch)
 logger.propagate = False
+
+
+def name_check(name, pattern, max_len, min_len):
+    """Function to validate workspace name.
+
+    Due to limitation of 30 characters for account name, wokspace name need to be limit as weel.
+    Workspace name Will be glued to the 'wi-user-sa-' pattern.
+    """
+    if not (len(name) >= min_len and len(name) <= max_len and bool(re.match(pattern, name)) == True):
+        logger.error(f"Workspace name should have between {min_len} and {max_len} characters, and can contain characters with regex {pattern}!")
+        raise SystemExit(1)
+    return True
 
 
 def create_repo_with_keypair(airee_repo, type):
@@ -161,6 +174,7 @@ if __name__ == "__main__":
         app_key = args['key']
 
     try:
+        name_check(args['workspace'], "^[a-z-]*$", 19, 1)
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
         workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
         app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': app_key, 'cert_name': app_cert}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
