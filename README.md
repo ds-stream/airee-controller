@@ -22,6 +22,7 @@ For now it just creating repos.
   -c CERT, --cert CERT | certificate needed for SSL/TLS in Airflow Webserver  
   -d DOMAIN, --domain DOMAIN | name of domain in GCP Project  
   -z DNSZONNE, --dnszone DNSZONE | name of dns-zone service in GCP Project  
+  -n NFSDAGS, --nfsdags NFSDAGS {yes, no} | Flag if DAGs will be keeped on NFS, otherwise DAGs will be in image - default='yes'  
 
   example
   ```sh
