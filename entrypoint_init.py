@@ -182,7 +182,7 @@ if __name__ == "__main__":
         nfsdags = args['nfsdags']
 
     try:
-        name_check(args['workspace'], "^[a-z-]*$", 19, 1)
+        name_check(args['workspace'], "^[a-z0-9-]*$", 19, 1)
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
         workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'nfs_dags': nfsdags, 'project_id': args['project']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
         app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': app_key, 'cert_name': app_cert, 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
