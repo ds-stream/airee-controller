@@ -19,6 +19,7 @@ from cookiecutter.main import cookiecutter
 from os.path import join as path_join 
 import sys
 import logging
+from retry import retry
 
 logger = logging.getLogger(__name__)
 logger.setLevel(config.log_lvl)
@@ -69,6 +70,7 @@ class Airee_gh_repo:
         """
         return f'{self.workspace}_{type}_{self.env}'
 
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def create_repo(self, name, private=True, **kwargs):
         """Method to create git repository in GitHub.
         
@@ -94,6 +96,7 @@ class Airee_gh_repo:
                 raise e
         return repo_obj
 
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def create_empty_repo_gh(self, type):
         """Create GitHub repository using Airee naming convention.
 
@@ -105,6 +108,7 @@ class Airee_gh_repo:
         name = self.repo_naming(type)
         return self.create_repo(name)
     
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def get_airee_repo(self, type):
         """Get GitHub repository object by Airee type.
         
@@ -116,6 +120,7 @@ class Airee_gh_repo:
         name = self.repo_naming(type)
         return self.gh_org.get_repo(name)
 
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def set_deploy_key(self, name, repo_obj, read_only=True):
         """Method to set deploy_key on repository.
         
@@ -130,6 +135,7 @@ class Airee_gh_repo:
         key_obj = repo_obj.create_key(name, pub_key.decode(), read_only)
         return priv_key, pub_key, key_obj
     
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def remove_deploy_key(self, key_obj):
         """Method to remove deploy key in repository.
         
@@ -140,6 +146,7 @@ class Airee_gh_repo:
         """
         return key_obj.delete()
     
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def set_secret(self, repo_obj, name, secret):
         """Method to set secret in GH repository.
 
@@ -184,7 +191,7 @@ class Airee_gh_repo:
             logger.error("Can't create repo from template - check logs")
             raise e
 
-
+    @retry(tries=2, delay=20, backoff=2, logger=logger)
     def delete_repo(self, repo_obj):
         """Method to delete GH repository.
         
