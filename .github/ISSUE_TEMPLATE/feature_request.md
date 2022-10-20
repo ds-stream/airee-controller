@@ -1,6 +1,6 @@
 ---
 name: "\U0001F4A1Feature request"
-about: If you have a suggestion for how to improve Airee
+about: If you have a suggestion for how to improve Airee Controller
 title: ''
 labels: enhancement
 assignees: ''
