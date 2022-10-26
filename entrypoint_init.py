@@ -146,9 +146,8 @@ def infra_repo_create(airee_repo, **kwargs):
 
 def change_status_json(path, status):
 
-    status_file = open(path_join(path, 'infra', "status.json"), "r")
-    json_object = json.load(status_file)
-    status_file.close()
+    with open(path_join(path, 'infra', "status.json"), "r") as status_file:
+       json_object = json.load(status_file)
 
     if (json_object["status"] == "down") & (status == "pause"):
         logger.error(f"Pause operation cannot be execute while infra is down.")
@@ -156,12 +155,13 @@ def change_status_json(path, status):
     if json_object["status"] == status :
         logger.error(f"{status} operation cannot be execute because infra status is now {status}")
         return 1
-
-    logger.debug(f"Status change from {json_object} to {status}")
+    
+    old_status = json_object["status"]
+    logger.info(f"Status change from {old_status} to {status}")
     json_object["status"] = status
-    status_file = open(path_join(path, 'infra', "status.json"), "w")
-    json.dump(json_object, status_file)
-    status_file.close()
+
+    with open(path_join(path, 'infra', "status.json"), "w") as status_file:
+       json.dump(json_object, status_file, indent=2)
 
     return 0
 
@@ -188,22 +188,22 @@ if __name__ == "__main__":
     subparser = parser.add_subparsers(dest='command')
     create = subparser.add_parser('create')
     pause = subparser.add_parser('pause')
-    unpause = subparser.add_parser('unpause')
+    start = subparser.add_parser('start')
     destroy = subparser.add_parser('destroy')
 
-    pause.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to create repositories and deploy keys - Required")
+    pause.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to perform actions in the repository and deploy keys - Required")
     pause.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
-    pause.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name (for future purposes) - Required ")
+    pause.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name - Required ")
     pause.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
 
-    unpause.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to create repositories and deploy keys - Required")
-    unpause.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
-    unpause.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name (for future purposes) - Required")
-    unpause.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
+    start.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to perform actions in the repository and deploy keys - Required")
+    start.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
+    start.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name - Required")
+    start.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
 
-    destroy.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to create repositories and deploy keys - Required")
+    destroy.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to perform actions in the repository and deploy keys - Required")
     destroy.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
-    destroy.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name (for future purposes) - Required")
+    destroy.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name - Required")
     destroy.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
 
     create.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to create repositories and deploy keys - Required")
@@ -256,7 +256,7 @@ if __name__ == "__main__":
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
         infra = change_status(airee, 'pause')
         
-    elif args['command'] == 'unpause':
+    elif args['command'] == 'start':
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
         infra = change_status(airee, 'up')
 

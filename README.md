@@ -1,11 +1,16 @@
 # Controller
 
-For now it just creating repos.
-## How to test it:
+- Create a new repository
+- Launch an infrastructure pause
+- Infrastructure resumption after pausing
+- Removal of working infrastructure
+
+## How to run:
 - build image
   ```sh
   docker build . -t controller
   ```
+### Create new repository
 - run docker with proper args.
 
   -h, --help            show this help message and exit  
@@ -26,7 +31,46 @@ For now it just creating repos.
 
   example
   ```sh
-  docker run --rm controller -t yourpersonaltokenxyz -w test123 -r small -e dev -p infra-sandbox-352609 -l gcp,airee -k key -c cert -s test-mm-terra
+  docker run --rm controller create -t yourpersonaltokenxyz -w test123 -r small -e dev -p gcp-ds-stream -l gcp,airee -k key -c cert -s test-mm-terra -g ds-stream
+  ```
+### Start pause
+- run docker with proper args.
+
+  -h, --help            show this help message and exit  
+  -t TOKEN, --token TOKEN | GitHub PAT needed to perform actions in the repository and deploy keys - <b>Required</b>  
+  -w WORKSPACE, --workspace WORKSPACE | workspace name - <b>Required</b>  
+  -e {prd,dev,uat}, --env {prd,dev,uat} | environment name - <b>Required</b>
+  -g GHORG, --ghorg GHORG | GitHub organization - <b>Required</b>    
+
+  example
+  ```sh
+  docker run --rm controller pause -t yourpersonaltokenxyz -w test123 -e dev -g ds-stream
+  ```
+### Start full infrastructure
+- run docker with proper args.
+
+  -h, --help            show this help message and exit  
+  -t TOKEN, --token TOKEN | GitHub PAT needed to perform actions in the repository and deploy keys - <b>Required</b>  
+  -w WORKSPACE, --workspace WORKSPACE | workspace name - <b>Required</b>  
+  -e {prd,dev,uat}, --env {prd,dev,uat} | environment name - <b>Required</b>
+  -g GHORG, --ghorg GHORG | GitHub organization - <b>Required</b>    
+
+  example
+  ```sh
+  docker run --rm controller start -t yourpersonaltokenxyz -w test123 -e dev -g ds-stream
+  ```
+### Destroy infrastructure
+- run docker with proper args.
+
+  -h, --help            show this help message and exit  
+  -t TOKEN, --token TOKEN | GitHub PAT needed to perform actions in the repository and deploy keys - <b>Required</b>  
+  -w WORKSPACE, --workspace WORKSPACE | workspace name - <b>Required</b>  
+  -e {prd,dev,uat}, --env {prd,dev,uat} | environment name - <b>Required</b>
+  -g GHORG, --ghorg GHORG | GitHub organization - <b>Required</b>    
+
+  example
+  ```sh
+  docker run --rm controller destroy -t yourpersonaltokenxyz -w test123 -e dev -g ds-stream
   ```
 ## push to gcr
 
