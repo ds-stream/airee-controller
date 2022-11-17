@@ -6,6 +6,7 @@ import config, util
 import argparse
 from os.path import join as path_join 
 import logging
+import json
 import re #library for name check
 
 logger = logging.getLogger(__name__)
@@ -143,51 +144,124 @@ def infra_repo_create(airee_repo, **kwargs):
 
     return infra_git
 
+def change_status_json(path, status):
+
+    with open(path_join(path, 'infra', "status.json"), "r") as status_file:
+       json_object = json.load(status_file)
+
+    if (json_object["status"] == "down") & (status == "pause"):
+        logger.error(f"Pause operation cannot be execute while infra is down.")
+        return 1
+    if json_object["status"] == status :
+        logger.error(f"{status} operation cannot be execute because infra status is now {status}")
+        return 1
+    
+    old_status = json_object["status"]
+    logger.info(f"Status change from {old_status} to {status}")
+    json_object["status"] = status
+
+    with open(path_join(path, 'infra', "status.json"), "w") as status_file:
+       json.dump(json_object, status_file, indent=2)
+
+    return 0
+
+def change_status(airee_repo, status):
+
+    path = util.get_tmp_path('infra')
+    repo_gh = airee_repo.get_airee_repo('infra')
+    priv_k_tmp, pub_k_tmp, dk_tmp = airee_repo.set_deploy_key('set_deploy_key', repo_gh, False)
+
+    infra_git = Gitrepo(repo_gh.ssh_url, priv_k_tmp, pub_k_tmp)
+    infra_git.clone_repo(path_join(path, 'infra'))
+
+    if not change_status_json(path, status):
+        infra_git.commit_all("Update status")
+        infra_git.push()
+    
+    airee_repo.remove_deploy_key(dk_tmp)
+
+    return 0
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Init Airee repos base on template')
-    parser.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to create repositories and deploy keys - Required")
-    parser.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
-    parser.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=False, default='dev', help="environment name (for future purposes) - default='dev'")
-    parser.add_argument('-r', '--tier', action='store', choices=['small', 'standard', 'large'], required=True, help="environment size (maps to VM sizes, etc. ) - Required")
-    parser.add_argument('-b', '--branch', action='store', required=False, default='main', help="template repositories branch to be used, optional parameter, default = main")
-    parser.add_argument('-p', '--project', action='store', required=True, help="GCP project - Required")
-    parser.add_argument('-l', '--ghrlabels', action='store', required=False, default='airflow', help="GitHub Actions runner labels - default='airflow'")
-    parser.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
-    parser.add_argument('-s', '--tfbuckend', action='store', required=True, help="Terraform GCS bucket name to store TF state - Required")
-    parser.add_argument('-k', '--key', action='store', required=False, default=None, help="private key needed for SSL/TLS in Airflow Webserver")
-    parser.add_argument('-c', '--cert', action='store', required=False, default=None, help="certificate needed for SSL/TLS in Airflow Webserver")
-    parser.add_argument('-d', '--domain', action='store', required=False, default=None, help="name of domain in GCP Project")
-    parser.add_argument('-z', '--dnszone', action='store', required=False, default=None, help="name of dns-zone service in GCP Project")
-    parser.add_argument('-n', '--nfsdags', action='store', required=False, choices=['yes', 'no'], default='yes', help="Flag if DAGs will be keeped on NFS, otherwise DAGs will be in image")
+    subparser = parser.add_subparsers(dest='command')
+    create = subparser.add_parser('create')
+    pause = subparser.add_parser('pause')
+    start = subparser.add_parser('start')
+    destroy = subparser.add_parser('destroy')
+
+    pause.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to perform actions in the repository and deploy keys - Required")
+    pause.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
+    pause.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name - Required ")
+    pause.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
+
+    start.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to perform actions in the repository and deploy keys - Required")
+    start.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
+    start.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name - Required")
+    start.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
+
+    destroy.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to perform actions in the repository and deploy keys - Required")
+    destroy.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
+    destroy.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=True, help="environment name - Required")
+    destroy.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
+
+    create.add_argument('-t', '--token', action='store', required=True, help="GitHub PAT needed to create repositories and deploy keys - Required")
+    create.add_argument('-w', '--workspace', action='store', required=True, help="workspace name - Required")
+    create.add_argument('-e', '--env', action='store', choices=['prd', 'dev', 'uat'], required=False, default='dev', help="environment name (for future purposes) - default='dev'")
+    create.add_argument('-r', '--tier', action='store', choices=['small', 'standard', 'large'], required=True, help="environment size (maps to VM sizes, etc. ) - Required")
+    create.add_argument('-b', '--branch', action='store', required=False, default='main', help="template repositories branch to be used, optional parameter, default = main")
+    create.add_argument('-p', '--project', action='store', required=True, help="GCP project - Required")
+    create.add_argument('-l', '--ghrlabels', action='store', required=False, default='airflow', help="GitHub Actions runner labels - default='airflow'")
+    create.add_argument('-g', '--ghorg', action='store', required=True, help="GitHub organization - Required")
+    create.add_argument('-s', '--tfbuckend', action='store', required=True, help="Terraform GCS bucket name to store TF state - Required")
+    create.add_argument('-k', '--key', action='store', required=False, default=None, help="private key needed for SSL/TLS in Airflow Webserver")
+    create.add_argument('-c', '--cert', action='store', required=False, default=None, help="certificate needed for SSL/TLS in Airflow Webserver")
+    create.add_argument('-d', '--domain', action='store', required=False, default=None, help="name of domain in GCP Project")
+    create.add_argument('-z', '--dnszone', action='store', required=False, default=None, help="name of dns-zone service in GCP Project")
+    create.add_argument('-n', '--nfsdags', action='store', required=False, choices=['yes', 'no'], default='yes', help="Flag if DAGs will be keeped on NFS, otherwise DAGs will be in image")
     args = vars(parser.parse_args())
     
-    # check certs
-    if (args['cert'] == None) & (args['domain'] == None):
-        logging.info(f"Cert secret name was not passed. Self signed cert will be generated.")
-        app_cert = f"{args['workspace']}-airee_cert"
-        app_key = f"{args['workspace']}-airee_key"
-    elif (args['cert'] == None) & (args['domain'] != None):
-        logging.error("Domain passed without Cert! Please pass Cert Secret name.")
-        exit(1)
-    else:
-        app_cert = args['cert']
-        app_key = args['key']
 
-    #check NFS
-    if args['nfsdags'] == 'no':
-        nfsdags = None
-    else:
-        nfsdags = args['nfsdags']
+    if args['command'] == 'create':
+        # check certs
+        if (args['cert'] == None) & (args['domain'] == None):
+            logging.info(f"Cert secret name was not passed. Self signed cert will be generated.")
+            app_cert = f"{args['workspace']}-airee_cert"
+            app_key = f"{args['workspace']}-airee_key"
+        elif (args['cert'] == None) & (args['domain'] != None):
+            logging.error("Domain passed without Cert! Please pass Cert Secret name.")
+            exit(1)
+        else:
+            app_cert = args['cert']
+            app_key = args['key']
 
-    try:
-        name_check(args['workspace'], "^[a-z0-9-]*$", 19, 1)
+        #check NFS
+        if args['nfsdags'] == 'no':
+            nfsdags = None
+        else:
+            nfsdags = args['nfsdags']
+
+        try:
+            name_check(args['workspace'], "^[a-z0-9-]*$", 19, 1)
+            airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
+            workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'nfs_dags': nfsdags, 'project_id': args['project']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+            app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': app_key, 'cert_name': app_cert, 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+            infra = infra_repo_create(airee, extra_context={'repo_name': 'infra', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'airflow_performance': args['tier'], 'labels': args['ghrlabels'], 'project_id': args['project'], 'tf_backend': args['tfbuckend'], 'domain': args['domain'], 'dns_zone': args['dnszone'], 'cert_name': args['cert'], 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+
+        except Exception as e:
+            logger.error(str(e))
+
+    elif args['command'] == 'pause':
         airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
-        workspace_data = workspace_repo_create(airee, extra_context={'repo_name': 'workspace_data', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'nfs_dags': nfsdags, 'project_id': args['project']}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
-        app = app_repo_create(airee, workspace_data, extra_context={'repo_name': 'app', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'labels': args['ghrlabels'], 'project_id': args['project'], 'key_name': app_key, 'cert_name': app_cert, 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
-        infra = infra_repo_create(airee, extra_context={'repo_name': 'infra', 'env': args['env'], 'workspace': args['workspace'], 'org': airee.org, 'airflow_performance': args['tier'], 'labels': args['ghrlabels'], 'project_id': args['project'], 'tf_backend': args['tfbuckend'], 'domain': args['domain'], 'dns_zone': args['dnszone'], 'cert_name': args['cert'], 'nfs_dags': nfsdags}, default_config=True, overwrite_if_exists=True, no_input=True, checkout=args['branch'])
+        infra = change_status(airee, 'pause')
+        
+    elif args['command'] == 'start':
+        airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
+        infra = change_status(airee, 'up')
 
-    except Exception as e:
-        logger.error(str(e))
-
+    elif args['command'] == 'destroy':
+        airee = Airee_gh_repo(args['token'], args['workspace'], env=args['env'], org=args['ghorg'])
+        infra = change_status(airee, 'down')
+    
+   
