@@ -9,9 +9,9 @@ Atributes:
 import logging
 
 template = {
-    'infra': 'airee-template-infra.git',
-    'app': 'airee-template-app.git',
-    'workspace_data': 'airee-template-workspace-data.git'
+    'infra': 'airee-template-infra-gcp.git',
+    'app': 'airee-template-app-gcp.git',
+    'workspace_data': 'airee-template-workspace-data-gcp.git'
 }
 
 log_lvl = logging.DEBUG
