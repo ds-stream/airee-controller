@@ -219,7 +219,7 @@ if __name__ == "__main__":
     create.add_argument('-c', '--cert', action='store', required=False, default=None, help="certificate needed for SSL/TLS in Airflow Webserver")
     create.add_argument('-d', '--domain', action='store', required=False, default=None, help="name of domain in GCP Project")
     create.add_argument('-z', '--dnszone', action='store', required=False, default=None, help="name of dns-zone service in GCP Project")
-    create.add_argument('-n', '--nfsdags', action='store', required=False, choices=['yes', 'no'], default='yes', help="Flag if DAGs will be keeped on NFS, otherwise DAGs will be in image")
+    create.add_argument('-n', '--nfsdags', action='store', required=False, choices=['yes', 'no'], default='no', help="Flag if DAGs will be keeped on NFS, otherwise DAGs will be in image")
     args = vars(parser.parse_args())
     
 
