@@ -6,7 +6,7 @@ import config, util
 import argparse
 from os.path import join as path_join 
 import logging
-import json
+import json 
 import re #library for name check
 
 logger = logging.getLogger(__name__)
